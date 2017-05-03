@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">乐康校车考勤</string>
+
+    <string name="Version_number_is_wrong">版本号错误</string>
+
+    <string name="login_activity_hint_user_name">请输入用户名</string>
+    <string name="login_activity_hint_password">请输入密码</string>
+    <string name="login_activity_btn_confirm">登&#160;&#160;录</string>
+    <string name="login_activity_hint_sucsses">登录成功</string>
+
+</resources>

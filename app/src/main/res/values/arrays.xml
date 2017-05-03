@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nfc_style">
+        <item>一体机串口</item>
+    </string-array>
+
+    <string-array name="player_style">
+        <item>图片轮播</item>
+        <item>视频</item>
+    </string-array>
+
+    <string-array name="attendance_style">
+        <item>自动(根据时间)</item>
+        <item>入园</item>
+        <item>离园</item>
+    </string-array>
+
+    <string-array name="leave_time">
+
+        <item>12点</item>
+        <item>13点</item>
+        <item>14点</item>
+        <item>15点</item>
+        <item>16点</item>
+        <item>17点</item>
+
+    </string-array>
+
+    <string-array name="department">
+
+        <item>部门</item>
+        <item>岗位</item>
+
+    </string-array>
+
+    <string-array name="camera_degree">
+        <item>0°</item>
+        <item>90°</item>
+        <item>-90°</item>
+        <item>180°</item>
+    </string-array>
+
+
+    <!--分班播报盒子设置-->
+    <string-array name="box">
+
+        <item>-1</item>
+
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+
+    </string-array>
+
+
+    <string-array name="fenban_style">
+
+        <item>0</item>
+
+    </string-array>
+
+</resources>

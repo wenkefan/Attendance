@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="hylk.com.xiaochekaoqin"
+          android:installLocation="auto"
+          android:versionCode="1"
+          android:versionName="Ver: 1.2.20170306.1"
+    >
+
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <!-- 唤醒屏幕 -->
+    <!-- vitamio所需 -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 禁止屏幕锁定 -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
+
+    <!--下面表示获取相机权限，获取自动聚焦权限,允许拍照权限，sd卡文件的写入和删除权限，配写sd卡的权限...-->
+
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+
+
+    <!-- 定位所需的权限 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+
+
+
+    <application
+        android:name="hylk.com.xiaochekaoqin.global.MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/logo1"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+
+        <activity android:name="hylk.com.xiaochekaoqin.activity.SplashActivity"
+                  android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+
+            >
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
+
+
+
+        </activity>
+
+
+        <activity android:name="hylk.com.xiaochekaoqin.activity.LoginActivity"
+
+            ></activity>
+
+
+
+        <activity android:name="hylk.com.xiaochekaoqin.activity.MainActivity"
+                  android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            >
+
+        </activity>
+
+
+        <!-- 网络发生变化时的广播 -->
+        <receiver android:name="hylk.com.xiaochekaoqin.receiver.NetStateReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
+         <!--开机自启的广播  // -->
+        <receiver android:name="hylk.com.xiaochekaoqin.receiver.BootStartReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+            </intent-filter>
+        </receiver>
+    </application>
+
+
+</manifest>

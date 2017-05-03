@@ -1,0 +1,42 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+
+
+    <dimen name="title_padding">40dp</dimen>
+
+    <dimen name="YEYNAME_margin_top">10dp</dimen>
+
+    <dimen name="LinearLayout_margin_left">50dp</dimen>
+
+    <dimen name="LinearLayout_margin_top1">15dp</dimen>
+
+    <dimen name="LinearLayout_info_padding">40dp</dimen>
+
+
+    <dimen name="child_info_padding">15dp</dimen>
+    <dimen name="child_info_margin_top">20dp</dimen>
+
+    <dimen name="child_camera_margin">20dp</dimen>
+
+    <dimen name="FrameLayout_margin_top">40dp</dimen>
+
+    <dimen name="imageview_margin_bottom">20dp</dimen>
+
+    <dimen name="uc_parent_logo_width">150dp</dimen>
+
+
+    <dimen name="textSize">25sp</dimen>
+
+    <dimen name="miaobian">5dp</dimen>
+
+    <dimen name="classInfoSize">18sp</dimen>
+
+
+    <dimen name="fenbaobobao">400dp</dimen>
+
+    <dimen name="titleSize">20sp</dimen>
+
+</resources>
