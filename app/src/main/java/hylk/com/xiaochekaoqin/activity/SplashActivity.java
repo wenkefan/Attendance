@@ -72,12 +72,9 @@ public class SplashActivity extends Activity {
 
 		setContentView(R.layout.activity_splash);
 
-		Log.d("有无SD卡：-------", hasSDcard() + "");
+//		Log.d("有无SD卡：-------", hasSDcard() + "");
 
 		check();
-
-//		login();
-
 
 	}
 
@@ -159,11 +156,6 @@ public class SplashActivity extends Activity {
 		String todayTime = TimeUtil.getTodayTime();
 
 		if (!lastDay.equals(todayTime)){
-
-			/** 删照片 */
-			String picturePath = getPicturePath();
-			File file = new File(picturePath);
-			deleteFile(file);
 
 			/** 删刷卡记录 */
 			CardNoRecordDao dao = new CardNoRecordDao(SplashActivity.this);
@@ -260,49 +252,7 @@ public class SplashActivity extends Activity {
 	}
 
 
-	//递归删除文件夹
-	private void deleteFile(File file) {
-		if (file.exists()) {//判断文件是否存在
-			if (file.isFile()) {//判断是否是文件
-				file.delete();//删除文件
-			} else if (file.isDirectory()) {//否则如果它是一个目录
-				File[] files = file.listFiles();//声明目录下所有的文件 files[];
-				for (int i = 0;i < files.length;i ++) {//遍历目录下所有的文件
-					this.deleteFile(files[i]);//把每个文件用这个方法进行迭代
-				}
-				file.delete();//删除文件夹
-			}
-		} else {
-			System.out.println("所删除的文件夹不存在-----");
-		}
-	}
 
-
-	/** 获取图片存储路径 */
-	public String getPicturePath(){
-
-		//下面获取sd卡的根目录，设置我们需要保存的路径...
-//        String filename = Environment.getExternalStorageState().toString() + File.separator + "CameraPhoto" + File.separator + "picture" + ".jpg";
-
-		String filename = null ;
-		// 图片路径初始化
-		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {  // 有内存卡
-			filename = Environment.getExternalStorageDirectory().getPath() + "/hylk/attendance/img_USBCamera/";
-			Log.d("wzz------", "有内存卡");
-		} else {  // 无内存卡
-
-			filename = getFilesDir().getPath() + "/hylk/attendance/img_USBCamera/";
-			Log.d("wzz------", "无内存卡");
-		}
-
-
-		File file = new File(filename);
-		if (!file.exists()) {//如果父文件夹不存在则进行新建...
-			file.mkdirs();
-		}
-
-		return filename;
-	}
 
 
 	/**
@@ -329,11 +279,6 @@ public class SplashActivity extends Activity {
 
 
 	}
-
-
-
-
-
 
 
 	/** 微信提醒
@@ -400,14 +345,14 @@ public class SplashActivity extends Activity {
 
 
 
-	public static boolean hasSDcard(){
-		String status = Environment.getExternalStorageState();
-		if (status.equals(Environment.MEDIA_MOUNTED)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	public static boolean hasSDcard(){
+//		String status = Environment.getExternalStorageState();
+//		if (status.equals(Environment.MEDIA_MOUNTED)) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
 	private Handler handler = new Handler() {
 		@Override

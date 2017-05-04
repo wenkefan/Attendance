@@ -4,30 +4,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.GridLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 import hylk.com.xiaochekaoqin.R;
 import hylk.com.xiaochekaoqin.baiduyuyin.Yuyin;
 import hylk.com.xiaochekaoqin.bean.AttendanceRecord;
 import hylk.com.xiaochekaoqin.bean.Child;
-import hylk.com.xiaochekaoqin.bean.Parent;
 import hylk.com.xiaochekaoqin.dao.AttendanceDao;
 import hylk.com.xiaochekaoqin.dao.ClassDao;
 import hylk.com.xiaochekaoqin.global.Constants;
@@ -51,16 +45,13 @@ import okhttp3.RequestBody;
 public class MainActivity extends NFCBaseActivity {
 
     private static final int TAG_POST_ATTENDANCE = 0;
-    private static final int TAG_POST_SMS = 1;
     private static final int TAG_POST_WEIXIN = 2;
 
     private static final int VALUE_TIMER = 11;
     private static final int VALUE_FENBANBOBAO = 12;
 
-//    private String mUrl_SMS;
     private String mUrl_WEIXIN;
 
-    private boolean ifSendSMS;  // 是否发送短信
     private boolean ifWeiXin, ifYuYin;  // 是否微信提醒
     private String YeyName;
 
@@ -68,7 +59,6 @@ public class MainActivity extends NFCBaseActivity {
 
     // 打开设置界面请求码
     private static final int REQUESTCODE_SETTING = 1;
-//    private PswDialog pswDialog;
 
     private boolean safeToTakePicture = false;
     private ImageView mPhotoInfo, back;
@@ -83,19 +73,14 @@ public class MainActivity extends NFCBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        requestWindowFeature(Window.FEATURE_NO_TITLE);//取消状态栏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏显示...
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//防止休眠
 
-
         setContentView(R.layout.activity_main_new);
-
-        baiduyuyin = Yuyin.getInstanit(this);
-
+        baiduyuyin = Yuyin.getInstanit(this);//初始化百度语音
         initView();
-        new TimeThread().start();
-
+        new TimeThread().start();//表
         /** 初始化数据，sql数据 */
         initData();
 
@@ -157,24 +142,16 @@ public class MainActivity extends NFCBaseActivity {
 
     private void initView() {
 
-        mytime = (TextView) findViewById(R.id.mytime);
-
-        mTv_bumen = (TextView) findViewById(R.id.class_bumen);
-
-//        mPhotoInfo = (ImageView) findViewById(R.id.infomation);
-
-        mDay = (TextView) findViewById(R.id.new_day);
-        mYearMon = (TextView) findViewById(R.id.new_yearmonth);
-        mWeek = (TextView) findViewById(R.id.new_week);
-
-        mTvYeyName = (TextView) findViewById(R.id.tv_yey);
-
-        mTvCardNo = (TextView) findViewById(R.id.tv_cardno);
-        mTvName = (TextView) findViewById(R.id.tv_name);
-        mTvClassName = (TextView) findViewById(R.id.tv_classname);
-        mTvSex = (TextView) findViewById(R.id.tv_sex);
-        mTvTime = (TextView) findViewById(R.id.tv_time);
-
+        mYearMon = (TextView) findViewById(R.id.new_yearmonth);//年月
+        mDay = (TextView) findViewById(R.id.new_day);//日
+        mWeek = (TextView) findViewById(R.id.new_week);//星期
+        mytime = (TextView) findViewById(R.id.mytime);//时分秒
+        mTv_bumen = (TextView) findViewById(R.id.class_bumen);//班级
+        mTvYeyName = (TextView) findViewById(R.id.tv_yey);//幼儿园名称
+        mTvCardNo = (TextView) findViewById(R.id.tv_cardno);//卡号
+        mTvName = (TextView) findViewById(R.id.tv_name);//姓名
+        mTvClassName = (TextView) findViewById(R.id.tv_classname);//班级
+        mTvTime = (TextView) findViewById(R.id.tv_time);//时间
         mTvState = (TextView) findViewById(R.id.state); // 入园或离园状态
 
     }
@@ -182,14 +159,11 @@ public class MainActivity extends NFCBaseActivity {
     private static int kgId;  // 园所id
 
     private void initData() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
-        gridLayoutManager.setOrientation(GridLayoutManager.HORIZONTAL);
-
+        /** 年月日 **/
         mDay.setText(TimeUtil.getDay());
         mYearMon.setText(TimeUtil.getYearMon());
         mWeek.setText(TimeUtil.getWeek());
 
-//        mUrl_SMS = UrlConstants.SendSMS; // 发送短信
         mUrl_WEIXIN = UrlConstants.WeiXinURL; // 微信接口
 
         // 园所Id
@@ -205,7 +179,6 @@ public class MainActivity extends NFCBaseActivity {
         Style = PrefUtils.getInt(this, Constants.ATTENDANCE_STYLE, 0);
 
         // 是否发送短信和微信,语音提醒
-        ifSendSMS = PrefUtils.getBoolean(this, Constants.IF_SEND_SMS, false); // 开始默认不发送短信
         ifWeiXin = PrefUtils.getBoolean(this, Constants.IF_WEIXIN, true); // 开始默认给手机微信提醒
         ifYuYin = PrefUtils.getBoolean(this, Constants.IF_YUYIN, true); // 开始默认语音播报
 
@@ -219,7 +192,7 @@ public class MainActivity extends NFCBaseActivity {
 
                 LogUtil.d("从main界面初始化数据完成----");
 
-                LogUtil.d("kgId:" + kgId + " YeyName:" + YeyName + " Style:" + Style + " ifSendSMS:" + ifSendSMS + " ifWeiXin:" + ifWeiXin + " ifYuYin:" + ifYuYin);
+                LogUtil.d("kgId:" + kgId + " YeyName:" + YeyName + " Style:" + Style + " ifWeiXin:" + ifWeiXin + " ifYuYin:" + ifYuYin);
 
                 YeyName = PrefUtils.getString(MainActivity.this, Constants.YEYNAME, " "); // 数据初始完成后获取幼儿园名称
                 mTvYeyName.setText(YeyName);  // 幼儿园
@@ -233,8 +206,6 @@ public class MainActivity extends NFCBaseActivity {
         });
 
 
-
-
         /** post请求*/
         OkHttpUtil.getInstance().setPostListener(new OkHttpUtil.OnPostListener() {
             @Override
@@ -243,7 +214,6 @@ public class MainActivity extends NFCBaseActivity {
 
                 if (tag == TAG_POST_ATTENDANCE && attendanceRecord != null) {
                     saveToLocal(attendanceRecord);
-                    saveData_1(0, child1);
                 }
 
             }
@@ -252,45 +222,24 @@ public class MainActivity extends NFCBaseActivity {
             public void onSuccess(int tag, final Child bean, final String json) {
 
                 switch (tag) {
-
                     case TAG_POST_ATTENDANCE: // 上传考勤记录
-
                         LogUtil.d("上传考勤记录返回-：" + json);
-
-
                         if (TextUtils.equals(json, "true")) {  // 考勤成功
-
-                            saveData_1(1, bean);
-
                             if (bean != null) {
-
                                 // 幼儿和家长卡才发短信和微信
-
                                 if (bean.cardType == 2) {
                                     return;
                                 }
-
                                 // 微信提醒
                                 if (ifWeiXin) {
                                     WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
                                 }
-
                             }
-
                         }
                         break;
-
-                    case TAG_POST_SMS:  // 发送短信
-
-                        LogUtil.d("发送短信返回：" + json);
-                        break;
-
                     case TAG_POST_WEIXIN:
-
                         LogUtil.d("请求微信接口返回：" + json);
-
                         break;
-
                 }
             }
 
@@ -299,85 +248,42 @@ public class MainActivity extends NFCBaseActivity {
     }
 
 
-    private void saveData_1(int tag, Child child1) {
-
-        String filename = null;
-
-        // 图片路径初始化
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {  // 有内存卡
-            filename = Environment.getExternalStorageDirectory().getPath() + "/hylk/attendance/" + File.separator
-                    + paserTime(System.currentTimeMillis()) + "/";
-            Log.d("wzz------", "有内存卡");
-        } else {  // 无内存卡
-
-            filename = getFilesDir().getPath() + "/hylk/attendance/" + File.separator
-                    + paserTime(System.currentTimeMillis()) + "/";
-
-            Log.d("wzz------", "无内存卡");
-        }
-
-
-        File file = new File(filename);
-        if (!file.exists()) {//如果父文件夹不存在则进行新建...
-            file.mkdirs();
-        }
-
-
-        StringBuffer sBuffer = new StringBuffer();
-
-        String className = child1.classInfoID == 0 ? child1.note : child1.className;  // 教学部 或者 班级
-
-        if (tag == 0) {
-            filename = filename + "Fail.txt";
-        } else if (tag == 1) {
-            filename = filename + "Success.txt";
-        }
-
-
-        sBuffer.append(className + "  " + child1.name + "  " + TimeUtil.saveTime1() + "\n");
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == REQUESTCODE_SETTING) {
-
-
-            // 如果kgId更改了，就重新获取数据
-
-            if (kgId != PrefUtils.getInt(this, Constants.YEYID, 33)) {
-
-                // 表示第一次登陆，为了重新初始化sql表
-
-                UpdateUtil.getInstance().init(this, true);
-                UpdateUtil.getInstance().upDateInfo();
-
-            }
-
-            // 园所Id
-            kgId = PrefUtils.getInt(this, Constants.YEYID, 33);
-
-            // 园所名称
-            YeyName = PrefUtils.getString(MainActivity.this, Constants.YEYNAME, " "); // 数据初始完成后获取幼儿园名称
-
-            // 离园和入园
-            // 0自动  1入园  2离园
-            Style = PrefUtils.getInt(this, Constants.ATTENDANCE_STYLE, 0);
-
-            // 是否发送短信和微信
-            ifSendSMS = PrefUtils.getBoolean(this, Constants.IF_SEND_SMS, false); // 开始默认不发送短信
-            ifWeiXin = PrefUtils.getBoolean(this, Constants.IF_WEIXIN, true); // 开始默认给手机微信提醒
-            ifYuYin = PrefUtils.getBoolean(this, Constants.IF_YUYIN, true); // 开始默认语音播报
-
-//            LogUtil.d("kgId:"+kgId+" YeyName:"+YeyName+" Style:"+Style+" ifSendSMS:"+ifSendSMS+" ifWeiXin:"+ifWeiXin);
-
-        }
+//        if (resultCode == RESULT_OK && requestCode == REQUESTCODE_SETTING) {
+//
+//
+//            // 如果kgId更改了，就重新获取数据
+//
+//            if (kgId != PrefUtils.getInt(this, Constants.YEYID, 33)) {
+//
+//                // 表示第一次登陆，为了重新初始化sql表
+//
+//                UpdateUtil.getInstance().init(this, true);
+//                UpdateUtil.getInstance().upDateInfo();
+//
+//            }
+//
+//            // 园所Id
+//            kgId = PrefUtils.getInt(this, Constants.YEYID, 33);
+//
+//            // 园所名称
+//            YeyName = PrefUtils.getString(MainActivity.this, Constants.YEYNAME, " "); // 数据初始完成后获取幼儿园名称
+//
+//            // 离园和入园
+//            // 0自动  1入园  2离园
+//            Style = PrefUtils.getInt(this, Constants.ATTENDANCE_STYLE, 0);
+//
+//            ifWeiXin = PrefUtils.getBoolean(this, Constants.IF_WEIXIN, true); // 开始默认给手机微信提醒
+//            ifYuYin = PrefUtils.getBoolean(this, Constants.IF_YUYIN, true); // 开始默认语音播报
+//
+//            LogUtil.d("kgId:" + kgId + " YeyName:" + YeyName + " Style:" + Style + " ifWeiXin:" + ifWeiXin);
+//
+//        }
 
     }
-
-    private ArrayList<Parent> mParents = new ArrayList<>();  // 空的家长信息集合
 
     // 判断是入园还是离园
     int AttendanceDirection;  // 入园
@@ -415,38 +321,21 @@ public class MainActivity extends NFCBaseActivity {
                     // 清空数据
                     mTvName.setText("- -");
                     mTvClassName.setText("- -");
-                    mTvSex.setText("- -");
-
                     mTvTime.setText("- -");
-
-
 
                 }
             });
 
-
             return;
         }
-
         Log.d("wzz---", "childName:------" + bean.name);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
-                if (bean.cardType == 2) {  // 老师
-                    mPhotoInfo.setImageResource(R.mipmap.teacher_info);
-
-                    mTv_bumen.setText(department + "：");
-
-                } else {
-                    mPhotoInfo.setImageResource(R.mipmap.child_info);
-                    mTv_bumen.setText("班级：");
-                }
-
                 mTvName.setText(bean.name);
                 mTvClassName.setText(bean.classInfoID == 0 ? bean.note : bean.className);  // 为0说明是老师，显示 教学部
-                mTvSex.setText(bean.sex == 1 ? "男" : "女");
 
                 mTvTime.setText(TimeUtil.saveTime());
 
@@ -481,7 +370,7 @@ public class MainActivity extends NFCBaseActivity {
 
     private TextView mTvYeyName, mTvState;
 
-    private TextView mTvCardNo, mTvName, mTvClassName, mTvSex, mTvTime;
+    private TextView mTvCardNo, mTvName, mTvClassName, mTvTime;
 
     /**
      * 上传考勤数据
@@ -555,18 +444,6 @@ public class MainActivity extends NFCBaseActivity {
 
     }
 
-
-    private String paserTime(long milliseconds) {
-        System.setProperty("user.timezone", "Asia/Shanghai");
-        TimeZone tz = TimeZone.getTimeZone("Asia/Shanghai");
-        TimeZone.setDefault(tz);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String times = format.format(new Date(milliseconds));
-
-        return times;
-    }
-
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -616,17 +493,6 @@ public class MainActivity extends NFCBaseActivity {
             }
         });
     }
-
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-
-
 
     @Override
     protected void onDestroy() {

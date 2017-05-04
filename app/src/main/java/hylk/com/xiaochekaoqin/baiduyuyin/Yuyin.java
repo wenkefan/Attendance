@@ -141,7 +141,7 @@ public class Yuyin implements SpeechSynthesizerListener {
         // 设置Mix模式的合成策略
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_MIX_MODE, SpeechSynthesizer.MIX_MODE_DEFAULT);
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEAKER, "0");
-        mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEED, "9");
+        mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_SPEED, "7");
         // 获取语音合成授权信息
         AuthInfo authInfo = mSpeechSynthesizer.auth(TtsMode.MIX);
         // 判断授权信息是否正确，如果正确则初始化语音合成器并开始语音合成，如果失败则做错误处理
