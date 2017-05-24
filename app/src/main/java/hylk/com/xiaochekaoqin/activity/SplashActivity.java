@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
@@ -651,7 +653,7 @@ public class SplashActivity extends Activity {
 	 *
 	 * @param file
 	 */
-	private void openFile(File file) {
+	private void openFile1(File file) {
 		// TODO Auto-generated method stub
 		Log.e("OpenFile", file.getName());
 		Intent intent = new Intent();
@@ -661,6 +663,23 @@ public class SplashActivity extends Activity {
 				"application/vnd.android.package-archive");
 		startActivity(intent);
 	}
+
+	private void openFile(File file) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		Uri data;
+		// 判断版本大于等于7.0
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			// "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+			data = FileProvider.getUriForFile(this, "hylk.com.xiaochekaoqin", file);
+			// 给目标应用一个临时授权
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		} else {
+			data = Uri.fromFile(file);
+		}
+		intent.setDataAndType(data, "application/vnd.android.package-archive");
+		startActivity(intent);
+	}
+
 
 	// --------------------------------------
 
