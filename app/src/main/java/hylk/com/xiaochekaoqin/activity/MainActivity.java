@@ -1,5 +1,7 @@
 package hylk.com.xiaochekaoqin.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,20 +10,27 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import hylk.com.xiaochekaoqin.R;
 import hylk.com.xiaochekaoqin.baiduyuyin.Yuyin;
 import hylk.com.xiaochekaoqin.bean.AttendanceRecord;
 import hylk.com.xiaochekaoqin.bean.Child;
+import hylk.com.xiaochekaoqin.bean.ClassMessage;
+import hylk.com.xiaochekaoqin.bean.JiLuBean;
+import hylk.com.xiaochekaoqin.bean.UserBean;
 import hylk.com.xiaochekaoqin.dao.AttendanceDao;
 import hylk.com.xiaochekaoqin.dao.ClassDao;
 import hylk.com.xiaochekaoqin.global.Constants;
@@ -50,6 +59,8 @@ public class MainActivity extends NFCBaseActivity {
     private static final int VALUE_TIMER = 11;
     private static final int VALUE_FENBANBOBAO = 12;
 
+    private static final String Key_JiLu = "Key_JiLu";
+
     private String mUrl_WEIXIN;
 
     private boolean ifWeiXin, ifYuYin;  // 是否微信提醒
@@ -62,7 +73,7 @@ public class MainActivity extends NFCBaseActivity {
 
     private boolean safeToTakePicture = false;
     private ImageView mPhotoInfo, back;
-    private TextView mTv_bumen, mytime;
+    private TextView mTv_bumen, mytime, jilu;
 
     private int mLeaveTime; // 离园时间
     private String department; // 部门还是岗位
@@ -74,7 +85,7 @@ public class MainActivity extends NFCBaseActivity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);//取消状态栏
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏显示...
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏显示...
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//防止休眠
 
         setContentView(R.layout.activity_main_new);
@@ -153,12 +164,25 @@ public class MainActivity extends NFCBaseActivity {
         mTvClassName = (TextView) findViewById(R.id.tv_classname);//班级
         mTvTime = (TextView) findViewById(R.id.tv_time);//时间
         mTvState = (TextView) findViewById(R.id.state); // 入园或离园状态
-
+        jilu = (TextView) findViewById(R.id.tv_look_record);
+        back = (ImageView) findViewById(R.id.title_back_iv);
+        back.setVisibility(View.GONE);
     }
 
     private static int kgId;  // 园所id
 
     private void initData() {
+
+        int Day = PrefUtils.getInt(this, "mDay", -1);
+        if (Day != -1) {
+            if (Day != TimeUtil.getDays()) {
+                PrefUtils.saveToShared(this, Key_JiLu, null);
+                PrefUtils.putInt(this, "mDay", TimeUtil.getDays());
+            }
+        } else {
+            PrefUtils.putInt(this, "mDay", TimeUtil.getDays());
+        }
+
         /** 年月日 **/
         mDay.setText(TimeUtil.getDay());
         mYearMon.setText(TimeUtil.getYearMon());
@@ -214,6 +238,24 @@ public class MainActivity extends NFCBaseActivity {
 
                 if (tag == TAG_POST_ATTENDANCE && attendanceRecord != null) {
                     saveToLocal(attendanceRecord);
+                    //添加记录
+                    List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+                    if (list == null) {
+                        list = new ArrayList<JiLuBean>();
+                    }
+                    JiLuBean jiLuBean = new JiLuBean();
+                    jiLuBean.setName(child1.name);
+                    jiLuBean.setClassName(child1.className);
+                    jiLuBean.setTime(TimeUtil.getHM());
+                    if (AttendanceDirection == 1) {
+                        jiLuBean.setLeixing("上车");
+                    } else if (AttendanceDirection == 2) {
+                        jiLuBean.setLeixing("下车");
+
+                    }
+                    list.add(0,jiLuBean);
+                    //添加记录
+                    PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
                 }
 
             }
@@ -234,6 +276,23 @@ public class MainActivity extends NFCBaseActivity {
                                 if (ifWeiXin) {
                                     WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
                                 }
+                                List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+                                if (list == null) {
+                                    list = new ArrayList<JiLuBean>();
+                                }
+                                JiLuBean jiLuBean = new JiLuBean();
+                                jiLuBean.setName(bean.name);
+                                jiLuBean.setClassName(bean.className);
+                                jiLuBean.setTime(TimeUtil.getHM());
+                                if (AttendanceDirection == 1) {
+                                    jiLuBean.setLeixing("上车");
+                                } else if (AttendanceDirection == 2) {
+                                    jiLuBean.setLeixing("下车");
+
+                                }
+                                list.add(0,jiLuBean);
+                                //添加记录
+                                PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
                             }
                         }
                         break;
@@ -247,43 +306,6 @@ public class MainActivity extends NFCBaseActivity {
 
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-//        if (resultCode == RESULT_OK && requestCode == REQUESTCODE_SETTING) {
-//
-//
-//            // 如果kgId更改了，就重新获取数据
-//
-//            if (kgId != PrefUtils.getInt(this, Constants.YEYID, 33)) {
-//
-//                // 表示第一次登陆，为了重新初始化sql表
-//
-//                UpdateUtil.getInstance().init(this, true);
-//                UpdateUtil.getInstance().upDateInfo();
-//
-//            }
-//
-//            // 园所Id
-//            kgId = PrefUtils.getInt(this, Constants.YEYID, 33);
-//
-//            // 园所名称
-//            YeyName = PrefUtils.getString(MainActivity.this, Constants.YEYNAME, " "); // 数据初始完成后获取幼儿园名称
-//
-//            // 离园和入园
-//            // 0自动  1入园  2离园
-//            Style = PrefUtils.getInt(this, Constants.ATTENDANCE_STYLE, 0);
-//
-//            ifWeiXin = PrefUtils.getBoolean(this, Constants.IF_WEIXIN, true); // 开始默认给手机微信提醒
-//            ifYuYin = PrefUtils.getBoolean(this, Constants.IF_YUYIN, true); // 开始默认语音播报
-//
-//            LogUtil.d("kgId:" + kgId + " YeyName:" + YeyName + " Style:" + Style + " ifWeiXin:" + ifWeiXin);
-//
-//        }
-
-    }
 
     // 判断是入园还是离园
     int AttendanceDirection;  // 入园
@@ -475,6 +497,16 @@ public class MainActivity extends NFCBaseActivity {
             AttendanceDirection = 2;
         }
 
+//        int Day = PrefUtils.getInt(this, "Fangxiang", 0);
+//        if (Day != 0) {
+//            if (AttendanceDirection != Day) {
+//                PrefUtils.saveToShared(this, Key_JiLu, null);
+//                PrefUtils.putInt(this, "Fangxiang", AttendanceDirection);
+//            }
+//        } else {
+//            PrefUtils.putInt(this, "Fangxiang", AttendanceDirection);
+//        }
+
     }
 
 
@@ -501,5 +533,110 @@ public class MainActivity extends NFCBaseActivity {
         System.exit(0); // 强制关闭虚拟机，否则下次进入应用刷卡读卡号会有问题。
     }
 
+    public void jilu(View view) {
+        startActivity(new Intent(this, LookRecordActivity.class));
+        jilu.setTextColor(getResources().getColor(R.color.colorAccent));
+    }
 
+    public void select(View view) {
+        //单园时选择班级
+        ClassDao classDao = new ClassDao(this);
+        final List<ClassMessage> classMessages = classDao.queryAllClassList();
+        final String[] clasList = new String[classMessages.size()];
+        for (int i = 0; i < classMessages.size(); i++) {
+            String classname = classMessages.get(i).getClassName();
+            clasList[i] = classname;
+        }
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("请选择班级");
+        dialog.setIcon(R.mipmap.sch_classicon);
+        dialog.setItems(clasList, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(MainActivity.this, SelectClasChildActivity.class);
+                intent.putExtra("selectclassid", classMessages.get(which).getClassInfoID());
+                intent.putExtra("selectclassname", clasList[which]);
+                intent.putExtra("fangxiangFlag",AttendanceDirection);
+//                intent.putExtra("stationid", stationBean.getStationId());
+//                intent.putExtra("KgId", UserInfoUtils.getInstance().getUserKgId());
+                startActivityForResult(intent, 1);
+            }
+        });
+        dialog.create();
+        dialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 1) {
+            Child bean = (Child) data.getSerializableExtra("selectObject");
+            LogUtil.d("bena.getSacardno--:" + bean);
+            if (bean != null && !bean.equals("")) {
+
+                showInfo(bean);
+            }
+        }
+    }
+
+    //  1. 显示幼儿信息和家长信息
+    private void showInfo(final Child bean) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                mTvName.setText(bean.name);
+                mTvClassName.setText(bean.className);  // 为0说明是老师，显示 教学部
+
+                mTvTime.setText(TimeUtil.saveTime());
+
+
+            }
+        });
+
+        // 3. 语音播报
+
+        if (ifYuYin) {
+
+            if (AttendanceDirection == 1) {
+                baiduyuyin.speak("欢迎" + bean.name);
+            } else {
+                baiduyuyin.speak(bean.name + "，再见");
+            }
+        }
+        LogUtil.d("bean.tostring--:" + bean.toString());
+        AttendanceRecord attendanceRecord = new AttendanceRecord();
+        attendanceRecord.UserId = bean.userid;
+        attendanceRecord.UserName = bean.name;
+        attendanceRecord.CheckType = 1; // 考勤方式   0、手工  1、一体机读卡器 2、网络读卡器 3、通道 4、门禁  5、手机
+        attendanceRecord.RelateId = bean.relateId;  // 刷家长卡时，relateId不为0  家长刷卡时候保存家长Id，幼儿或员工刷卡时默认为0
+        attendanceRecord.SACardNo = bean.sacrd;
+        attendanceRecord.AttendanceDirection = AttendanceDirection; // 考勤进出方向   全部All -1  未知Unknown 0  入园Enter 1 出园Leave 2
+        attendanceRecord.SADate = TimeUtil.getCurrentTime(); // 考勤时间
+        attendanceRecord.AttendanceTaget = 1;  // 考勤对象  幼儿1  员工2  家长3
+
+        upLoadAttendanceRecord(attendanceRecord, null, bean);
+    }
+
+
+    private long exitTime;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+            if ((System.currentTimeMillis() - exitTime) > 2000) //System.currentTimeMillis()无论何时调用，肯定大于2000
+            {
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

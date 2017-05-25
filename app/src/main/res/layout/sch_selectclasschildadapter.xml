@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/darker_gray1"
+        android:paddingTop="5dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp">
+
+        <TextView
+            android:id="@+id/tv_select_child_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="姓名"
+            android:textColor="@color/darker_gray"
+            android:textSize="17dp"
+            android:layout_centerVertical="true"/>
+        <Button
+            android:id="@+id/btn_shangche"
+            android:layout_width="55dp"
+            android:layout_height="25dp"
+            android:layout_margin="20dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/sch_facheshapeoff"
+            android:text="上车"
+            android:textColor="@color/card_view_background_dark"
+            android:textSize="18sp" />
+
+        <!--<ImageView-->
+            <!--android:id="@+id/iv_type_select"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginRight="10dp"/>-->
+
+    </RelativeLayout>
+</RelativeLayout>

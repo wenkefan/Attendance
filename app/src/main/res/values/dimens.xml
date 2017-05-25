@@ -10,7 +10,7 @@
 
     <dimen name="YEYNAME_margin_top">10dp</dimen>
 
-    <dimen name="LinearLayout_margin_left">50dp</dimen>
+    <dimen name="LinearLayout_margin_left">35dp</dimen>
 
     <dimen name="LinearLayout_margin_top1">15dp</dimen>
 
@@ -29,7 +29,7 @@
     <dimen name="uc_parent_logo_width">150dp</dimen>
 
 
-    <dimen name="textSize">25sp</dimen>
+    <dimen name="textSize">18sp</dimen>
 
     <dimen name="miaobian">5dp</dimen>
 
@@ -38,9 +38,10 @@
 
     <dimen name="fenbaobobao">400dp</dimen>
 
-    <dimen name="titleSize">20sp</dimen>
+    <dimen name="titleSize">18sp</dimen>
 
     <dimen name="font_size_small">14sp</dimen>
     <dimen name="font_size_middle">16sp</dimen>
+    <string name="look_jilu"><u>查看记录</u></string>
 
 </resources>

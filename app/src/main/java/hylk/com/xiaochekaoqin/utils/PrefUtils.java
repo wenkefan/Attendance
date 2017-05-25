@@ -3,6 +3,12 @@ package hylk.com.xiaochekaoqin.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /*
  * sharedpreference工具类
  */
@@ -75,5 +81,38 @@ public class PrefUtils {
 		SharedPreferences sp = getSharedPre(ctx);
 		return sp.getFloat(key, defValue);
 
+	}
+
+	public static void saveToShared(Context ctx,String key, Object obj) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		SharedPreferences sp = getSharedPre(ctx);
+		SharedPreferences.Editor editor;
+		try {
+			ObjectOutputStream oout = new ObjectOutputStream(out);
+			oout.writeObject(obj);
+			String value = new String(Base64.encode(out.toByteArray()));
+			editor = sp.edit();
+			editor.putString(key, value);
+			editor.commit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static Object queryForSharedToObject(Context ctx,String key) {
+		SharedPreferences sp = getSharedPre(ctx);
+		String value = sp.getString(key, null);
+		if (value != null) {
+			byte[] valueBytes = Base64.decode(value);
+			ByteArrayInputStream bin = new ByteArrayInputStream(valueBytes);
+			try {
+				ObjectInputStream oin = new ObjectInputStream(bin);
+
+				return oin.readObject();
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
 	}
 }

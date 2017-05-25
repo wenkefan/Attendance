@@ -160,4 +160,47 @@ public class TimeUtil {
 		}
 		return "星期"+mWay;
 	}
+
+	public static String getHM(){
+		int h = getH();
+		int m = getM();
+		String Sm;
+		if (m < 10){
+			Sm = "0" + m;
+		} else {
+			Sm = m + "";
+		}
+		return h + ":" + Sm;
+	}
+
+	//获取 时
+	public static int getH() {
+		Calendar c = Calendar.getInstance();
+		int time = 0;
+		time = c.get(Calendar.HOUR_OF_DAY);
+
+		return time;
+	}
+
+	//获取 分
+	public static int getM() {
+		Calendar c = Calendar.getInstance();
+		int time = 0;
+		time = c.get(Calendar.MINUTE);
+
+		return time;
+	}
+	public static String gettime(){
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String date = sDateFormat.format(new java.util.Date());
+		return date;
+	}
+
+	public static int getDays(){
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
+		String str = formatter.format(curDate);
+		String day = str.substring(8, 10);
+		return Integer.parseInt(day); // 8
+	}
 }

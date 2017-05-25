@@ -9,7 +9,7 @@
 
     <dimen name="YEYNAME_margin_top">8dp</dimen>
 
-    <dimen name="LinearLayout_margin_left">30dp</dimen>
+    <dimen name="LinearLayout_margin_left">25dp</dimen>
 
     <dimen name="LinearLayout_margin_top1">15dp</dimen>
 

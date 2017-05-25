@@ -110,6 +110,7 @@
             android:textSize="@dimen/titleSize"
             android:textStyle="bold" />
 
+        <!--android:textStyle="bold" -->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -130,8 +131,7 @@
                     android:layout_height="wrap_content"
                     android:text="当前状态："
                     android:textColor="#000000"
-                    android:textSize="@dimen/titleSize"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/titleSize" />
 
                 <TextView
                     android:id="@+id/state"
@@ -139,8 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:textColor="@android:color/holo_red_dark"
-                    android:textSize="@dimen/titleSize"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/titleSize" />
             </LinearLayout>
 
         </LinearLayout>
@@ -148,7 +147,7 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -156,34 +155,47 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
-        android:background="@mipmap/touxiangbg"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:background="@mipmap/touxiangbg">
 
         <ImageView
+            android:id="@+id/iv_name_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:src="@mipmap/touxiang" />
 
         <TextView
+            android:id="@+id/tv_name_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/iv_name_icon"
             android:text="姓名："
             android:textColor="#000000"
-            android:textSize="@dimen/titleSize"
-            android:textStyle="bold" />
+            android:textSize="@dimen/titleSize" />
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/tv_name_name"
             android:textColor="#000000"
-            android:textSize="@dimen/titleSize"
-            android:textStyle="bold" />
+            android:textSize="@dimen/titleSize" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/select_child"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@mipmap/adduser"
+            android:onClick="select" />
+
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -193,7 +205,6 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="@dimen/LinearLayout_margin_top1"
         android:layout_weight="1">
-
 
 
         <LinearLayout
@@ -216,11 +227,20 @@
     <LinearLayout
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:gravity="center_vertical"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
+        <TextView
+            android:id="@+id/tv_look_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:clickable="true"
+            android:onClick="jilu"
+            android:text="@string/look_jilu"
+            android:textSize="@dimen/textSize" />
 
     </LinearLayout>
 
