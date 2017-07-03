@@ -60,4 +60,10 @@ public class Constants {
 	public static final String LiYuanOne = "LiYuanOne";  // 离园时间
 	public static final String LiYuanTwo = "LiYuanTwo";  // 离园时间
 
+	public static final String TimeBigen = "TimeBigen";
+	public static final String SetTime = "SetTime";
+	public static final String Map = "Map";
+	public static final String CarPan = "CarPan";
+	public static final String Device = "Device";
+
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -21,10 +22,9 @@ import hylk.com.xiaochekaoqin.utils.PrefUtils;
 public class LookRecordAdapter extends BaseRecyclerAdapter {
 
     private List<JiLuBean> list;
-    private static final String Key_JiLu = "Key_JiLu";
 
-    public LookRecordAdapter() {
-        this.list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MyApplication.getContext(),Key_JiLu);
+    public LookRecordAdapter(List<JiLuBean> list) {
+        this.list = list;
     }
 
     @Override
@@ -33,14 +33,20 @@ public class LookRecordAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ClickableViewHolder holder, int position) {
+    public void onBindViewHolder(ClickableViewHolder holder, final int position) {
 
         if (holder instanceof LookRecordViewHolder){
             LookRecordViewHolder holde = (LookRecordViewHolder) holder;
             holde.name.setText(list.get(position).getName());
             holde.time.setText(list.get(position).getTime());
             holde.classname.setText(list.get(position).getClassName());
-            holde.zhuangtai.setText(list.get(position).getLeixing());
+            holde.zhuangtai.setText("下车");
+            holde.zhuangtai.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.setOnItemListener(position);
+                }
+            });
         }
         super.onBindViewHolder(holder, position);
     }
@@ -52,7 +58,8 @@ public class LookRecordAdapter extends BaseRecyclerAdapter {
 
     public class LookRecordViewHolder extends ClickableViewHolder{
 
-        private TextView name,time,classname,zhuangtai;
+        private TextView name,time,classname;
+        private Button zhuangtai;
 
         public LookRecordViewHolder(View itemView) {
             super(itemView);
@@ -61,5 +68,15 @@ public class LookRecordAdapter extends BaseRecyclerAdapter {
             classname = $(R.id.tv_look_record_class_name);
             zhuangtai = $(R.id.tv_look_record_zhuangtai);
         }
+    }
+
+    interface OnItemListener{
+        void setOnItemListener(int position);
+    }
+
+    OnItemListener listener;
+
+    public void setOnLookItemListener(OnItemListener listener){
+        this.listener = listener;
     }
 }

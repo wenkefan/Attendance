@@ -45,16 +45,21 @@
             android:text="时间"
             android:textColor="@color/black"
             android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/tv_look_record_zhuangtai"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="状态"
-            android:textSize="15sp"
-            android:textColor="#ff669900"/>
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/tv_look_record_zhuangtai"
+                android:layout_width="45dp"
+                android:layout_height="25dp"
+                android:background="@drawable/sch_shangxiacheoff"
+                android:layout_centerInParent="true"
+                android:text="状态"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
+        </RelativeLayout>
 
     </LinearLayout>
 

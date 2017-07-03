@@ -73,7 +73,7 @@ public class MainActivity extends NFCBaseActivity {
 
     private boolean safeToTakePicture = false;
     private ImageView mPhotoInfo, back;
-    private TextView mTv_bumen, mytime, jilu;
+    private TextView mTv_bumen, mytime, jilu, wucashang;
 
     private int mLeaveTime; // 离园时间
     private String department; // 部门还是岗位
@@ -133,10 +133,10 @@ public class MainActivity extends NFCBaseActivity {
 
                     if (Style == 0) {  // 自动
                         if (TimeUtil.getCurrentHour() < mLeaveTime) {
-                            mTvState.setText("上车");
+//                            mTvState.setText("上车");
                             AttendanceDirection = 1;
                         } else {
-                            mTvState.setText("下车");
+//                            mTvState.setText("下车");
                             AttendanceDirection = 2;
                         }
                     }
@@ -164,8 +164,10 @@ public class MainActivity extends NFCBaseActivity {
         mTvClassName = (TextView) findViewById(R.id.tv_classname);//班级
         mTvTime = (TextView) findViewById(R.id.tv_time);//时间
         mTvState = (TextView) findViewById(R.id.state); // 入园或离园状态
-        jilu = (TextView) findViewById(R.id.tv_look_record);
+//        jilu = (TextView) findViewById(R.id.tv_look_record);
         back = (ImageView) findViewById(R.id.title_back_iv);
+//        wucashang = (TextView) findViewById(R.id.tv_look_shang);
+//        wucashang.setOnClickListener(this);
         back.setVisibility(View.GONE);
     }
 
@@ -240,20 +242,26 @@ public class MainActivity extends NFCBaseActivity {
                     saveToLocal(attendanceRecord);
                     //添加记录
                     List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
-                    if (list == null) {
-                        list = new ArrayList<JiLuBean>();
-                    }
-                    JiLuBean jiLuBean = new JiLuBean();
-                    jiLuBean.setName(child1.name);
-                    jiLuBean.setClassName(child1.className);
-                    jiLuBean.setTime(TimeUtil.getHM());
                     if (AttendanceDirection == 1) {
+                        if (list == null) {
+                            list = new ArrayList<>();
+                        }
+                        JiLuBean jiLuBean = new JiLuBean();
                         jiLuBean.setLeixing("上车");
+                        jiLuBean.setUserid(child1.userid);
+                        jiLuBean.setName(child1.name);
+                        jiLuBean.setClassName(child1.className);
+                        jiLuBean.setClassid(child1.classInfoID);
+                        jiLuBean.setTime(TimeUtil.getHM());
+                        list.add(0, jiLuBean);
                     } else if (AttendanceDirection == 2) {
-                        jiLuBean.setLeixing("下车");
-
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getUserid() == child1.userid) {
+                                list.remove(i);
+                                break;
+                            }
+                        }
                     }
-                    list.add(0,jiLuBean);
                     //添加记录
                     PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
                 }
@@ -277,20 +285,26 @@ public class MainActivity extends NFCBaseActivity {
                                     WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
                                 }
                                 List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
-                                if (list == null) {
-                                    list = new ArrayList<JiLuBean>();
-                                }
-                                JiLuBean jiLuBean = new JiLuBean();
-                                jiLuBean.setName(bean.name);
-                                jiLuBean.setClassName(bean.className);
-                                jiLuBean.setTime(TimeUtil.getHM());
                                 if (AttendanceDirection == 1) {
+                                    if (list == null) {
+                                        list = new ArrayList<>();
+                                    }
+                                    JiLuBean jiLuBean = new JiLuBean();
                                     jiLuBean.setLeixing("上车");
+                                    jiLuBean.setUserid(bean.userid);
+                                    jiLuBean.setName(bean.name);
+                                    jiLuBean.setClassName(bean.className);
+                                    jiLuBean.setClassid(bean.classInfoID);
+                                    jiLuBean.setTime(TimeUtil.getHM());
+                                    list.add(0, jiLuBean);
                                 } else if (AttendanceDirection == 2) {
-                                    jiLuBean.setLeixing("下车");
-
+                                    for (int i = 0; i < list.size(); i++) {
+                                        if (list.get(i).getUserid() == bean.userid) {
+                                            list.remove(i);
+                                            break;
+                                        }
+                                    }
                                 }
-                                list.add(0,jiLuBean);
                                 //添加记录
                                 PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
                             }
@@ -315,7 +329,14 @@ public class MainActivity extends NFCBaseActivity {
         /** 从本地查询卡号对应信息 */
         ClassDao classDao = new ClassDao(MainActivity.this);
         final Child bean = classDao.queryByCardNo(cardNo);
-
+        List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+        AttendanceDirection = 1;
+        for (int i = 0; i < list.size(); i++){
+            if (list.get(i).getUserid() == bean.userid){
+                AttendanceDirection = 2;
+                break;
+            }
+        }
         LogUtil.d("监护人的个数：-----" + bean.list.size());
 
         if (bean.list.size() > 0) {
@@ -344,6 +365,7 @@ public class MainActivity extends NFCBaseActivity {
                     mTvName.setText("- -");
                     mTvClassName.setText("- -");
                     mTvTime.setText("- -");
+                    mTvState.setText("- -");
 
                 }
             });
@@ -360,8 +382,11 @@ public class MainActivity extends NFCBaseActivity {
                 mTvClassName.setText(bean.classInfoID == 0 ? bean.note : bean.className);  // 为0说明是老师，显示 教学部
 
                 mTvTime.setText(TimeUtil.saveTime());
-
-
+                if (AttendanceDirection == 1) {
+                    mTvState.setText("上车");
+                } else {
+                    mTvState.setText("下车");
+                }
             }
         });
 
@@ -481,21 +506,21 @@ public class MainActivity extends NFCBaseActivity {
 
         // 入园状态
 
-        if (Style == 0) {  // 自动
-            if (TimeUtil.getCurrentHour() < mLeaveTime) {
-                mTvState.setText("上车");
-                AttendanceDirection = 1;
-            } else {
-                mTvState.setText("下车");
-                AttendanceDirection = 2;
-            }
-        } else if (Style == 1) {  // 入园
-            mTvState.setText("上车");
-            AttendanceDirection = 1;
-        } else {
-            mTvState.setText("下车");
-            AttendanceDirection = 2;
-        }
+//        if (Style == 0) {  // 自动
+//            if (TimeUtil.getCurrentHour() < mLeaveTime) {
+//                mTvState.setText("上车");
+//                AttendanceDirection = 1;
+//            } else {
+//                mTvState.setText("下车");
+//                AttendanceDirection = 2;
+//            }
+//        } else if (Style == 1) {  // 入园
+//            mTvState.setText("上车");
+//            AttendanceDirection = 1;
+//        } else {
+//            mTvState.setText("下车");
+//            AttendanceDirection = 2;
+//        }
 
 //        int Day = PrefUtils.getInt(this, "Fangxiang", 0);
 //        if (Day != 0) {
@@ -534,8 +559,37 @@ public class MainActivity extends NFCBaseActivity {
     }
 
     public void jilu(View view) {
-        startActivity(new Intent(this, LookRecordActivity.class));
-        jilu.setTextColor(getResources().getColor(R.color.colorAccent));
+        startActivityForResult(new Intent(this, LookRecordActivity.class), 2);
+//        jilu.setTextColor(getResources().getColor(R.color.colorAccent));
+    }
+    public void Shangche(View view){
+
+//        wucashang.setTextColor(getResources().getColor(R.color.colorAccent));
+        //单园时选择班级
+        ClassDao classDao = new ClassDao(this);
+        final List<ClassMessage> classMessages = classDao.queryAllClassList();
+        final String[] clasList = new String[classMessages.size()];
+        for (int i = 0; i < classMessages.size(); i++) {
+            String classname = classMessages.get(i).getClassName();
+            clasList[i] = classname;
+        }
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("请选择班级");
+        dialog.setIcon(R.mipmap.sch_classicon);
+        dialog.setItems(clasList, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(MainActivity.this, SelectClasChildActivity.class);
+                intent.putExtra("selectclassid", classMessages.get(which).getClassInfoID());
+                intent.putExtra("selectclassname", clasList[which]);
+                intent.putExtra("fangxiangFlag", AttendanceDirection);
+//                intent.putExtra("stationid", stationBean.getStationId());
+//                intent.putExtra("KgId", UserInfoUtils.getInstance().getUserKgId());
+                startActivityForResult(intent, 1);
+            }
+        });
+        dialog.create();
+        dialog.show();
     }
 
     public void select(View view) {
@@ -556,7 +610,7 @@ public class MainActivity extends NFCBaseActivity {
                 Intent intent = new Intent(MainActivity.this, SelectClasChildActivity.class);
                 intent.putExtra("selectclassid", classMessages.get(which).getClassInfoID());
                 intent.putExtra("selectclassname", clasList[which]);
-                intent.putExtra("fangxiangFlag",AttendanceDirection);
+                intent.putExtra("fangxiangFlag", AttendanceDirection);
 //                intent.putExtra("stationid", stationBean.getStationId());
 //                intent.putExtra("KgId", UserInfoUtils.getInstance().getUserKgId());
                 startActivityForResult(intent, 1);
@@ -573,9 +627,15 @@ public class MainActivity extends NFCBaseActivity {
             Child bean = (Child) data.getSerializableExtra("selectObject");
             LogUtil.d("bena.getSacardno--:" + bean);
             if (bean != null && !bean.equals("")) {
-
+                AttendanceDirection = 1;
                 showInfo(bean);
             }
+        } else if (requestCode == 2 && resultCode == 2) {
+            int userid = data.getIntExtra("userid", 0);
+            ClassDao classDao = new ClassDao(MainActivity.this);
+            Child bean = classDao.queryChild(userid);
+            AttendanceDirection = 2;
+            showInfo(bean);
         }
     }
 
@@ -591,6 +651,11 @@ public class MainActivity extends NFCBaseActivity {
 
                 mTvTime.setText(TimeUtil.saveTime());
 
+                if (AttendanceDirection == 1) {
+                    mTvState.setText("上车");
+                } else {
+                    mTvState.setText("下车");
+                }
 
             }
         });

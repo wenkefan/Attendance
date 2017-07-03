@@ -13,6 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:clickable="true"
+        android:visibility="gone"
         android:src="@mipmap/btn_back_normal" />
 
     <TextView

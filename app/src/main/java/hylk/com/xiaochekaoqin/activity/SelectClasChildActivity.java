@@ -11,13 +11,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hylk.com.xiaochekaoqin.R;
 import hylk.com.xiaochekaoqin.bean.Child;
+import hylk.com.xiaochekaoqin.bean.JiLuBean;
 import hylk.com.xiaochekaoqin.bean.UserBean;
 import hylk.com.xiaochekaoqin.dao.ClassDao;
 import hylk.com.xiaochekaoqin.dao.UserDao;
+import hylk.com.xiaochekaoqin.global.MyApplication;
 import hylk.com.xiaochekaoqin.utils.LogUtil;
 import hylk.com.xiaochekaoqin.utils.PrefUtils;
 
@@ -31,6 +34,9 @@ public class SelectClasChildActivity extends BaseActivity implements Selectclass
     TextView title;
     RecyclerView recyclerView;
     ImageView back;
+
+    private List<JiLuBean> JiLuList;
+    private static final String Key_JiLu = "Key_JiLu";
 
     private PrefUtils sp;
 
@@ -55,6 +61,7 @@ public class SelectClasChildActivity extends BaseActivity implements Selectclass
         String classinfoName = getIntent().getStringExtra("selectclassname");
         int classinfoid = getIntent().getIntExtra("selectclassid",0);
         int flag = getIntent().getIntExtra("fangxiangFlag",0);
+        JiLuList = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MyApplication.getContext(), Key_JiLu);
 //        stationid = getIntent().getIntExtra("stationid",0);
 //        int kgid = getIntent().getIntExtra("KgId",0);
         UserDao userDao = new UserDao(this);
@@ -74,6 +81,26 @@ public class SelectClasChildActivity extends BaseActivity implements Selectclass
             });
             builder.show();
         } else {
+            if (JiLuList != null){
+                List<Integer> useridList = new ArrayList<>();
+                for (JiLuBean bean : JiLuList){
+                    if (bean.getClassid() == classinfoid){
+                        useridList.add(bean.getUserid());
+                    }
+                }
+                if (useridList.size() != 0){
+                    for (int i = 0; i < list.size(); i++){
+                        for (int j = 0; j < useridList.size(); j++){
+                            if (list.get(i).getUserId() == useridList.get(j)){
+                                list.remove(i);
+                                i--;
+                                useridList.remove(j);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             initadapter(list,flag);
         }
     }
@@ -82,58 +109,10 @@ public class SelectClasChildActivity extends BaseActivity implements Selectclass
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new Selectclasschildadapter(list,flag);
+        adapter = new Selectclasschildadapter(list);
         recyclerView.setAdapter(adapter);
         adapter.setSelectListener(SelectClasChildActivity.this);
     }
-
-//    @Override
-//    public void NetWorkSuccess(int Flag) {
-//        if (Flag == Keyword.FLAGDOWNCAR) {//上车
-//            closeDialog();
-//            UpAndDownRecordData data = new UpAndDownRecordData(this);
-//            UpAndDownRecordBean udBean = new UpAndDownRecordBean();
-//            udBean.setKgId(list.get(positions).getKgId());
-//            udBean.setClassId(list.get(positions).getClassInfoID());//班级ID
-//            udBean.setChildId(list.get(positions).getUserId());//幼儿ID
-//            udBean.setChildName(list.get(positions).getUserName());//幼儿姓名
-//            udBean.setSACardNo(list.get(positions).getSACardNo());//卡号
-//            udBean.setBusOrderId(sp.getInt(Keyword.BusOrderId));//发车单号
-//            udBean.setShang(stationid);//上车站点
-//            udBean.setXia(0);//下车站点
-//            udBean.setIsworkShang(1);//是否上传
-//            udBean.setIsworkXia(0);//是否上传
-//            udBean.setIsShang(1);
-//            udBean.setIsXia(0);
-//            data.add(udBean);
-//            ToastUtil.show(list.get(positions).getUserName() + "上车");
-//            finish();
-//        }
-//    }
-//
-//    @Override
-//    public void NetWorkError(int Flag) {
-//        if (Flag == Keyword.ShangURL){
-//            closeDialog();
-//            UpAndDownRecordData data = new UpAndDownRecordData(this);
-//            UpAndDownRecordBean udBean = new UpAndDownRecordBean();
-//            udBean.setKgId(list.get(positions).getKgId());
-//            udBean.setClassId(list.get(positions).getClassInfoID());//班级ID
-//            udBean.setChildId(list.get(positions).getUserId());//幼儿ID
-//            udBean.setChildName(list.get(positions).getUserName());//幼儿姓名
-//            udBean.setSACardNo(list.get(positions).getSACardNo());//卡号
-//            udBean.setBusOrderId(sp.getInt(Keyword.BusOrderId));//发车单号
-//            udBean.setShang(stationid);//上车站点
-//            udBean.setXia(0);//下车站点
-//            udBean.setIsworkShang(0);//是否上传
-//            udBean.setIsworkXia(0);//是否上传
-//            udBean.setIsShang(1);
-//            udBean.setIsXia(0);
-//            data.add(udBean);
-//            ToastUtil.show(list.get(positions).getUserName() + "上车");
-//            finish();
-//        }
-//    }
 
     @Override
     public void OnClickListener(int position) {
@@ -144,28 +123,6 @@ public class SelectClasChildActivity extends BaseActivity implements Selectclass
         setResult(1,intent);
         finish();
 
-//        showDialog();
-//        this.positions = position;
-//        UpAndDownRecordData data = new UpAndDownRecordData(SelectClasChildActivity.this);
-//        if (!data.queryShangche(UserInfoUtils.getInstance().getUserKgId(),sp.getInt(Keyword.BusOrderId),list.get(position).getUserId())){
-//            String url = String.format(
-//                    HTTPURL.API_STUDENT_OPEN_DOWN,
-//                    sp.getInt(Keyword.BusOrderId),
-//                    list.get(position).getUserId(),
-//                    stationid,
-//                    GetDateTime.getdatetime(),
-//                    1,
-//                    UserInfoUtils.getInstance().getUserKgId(),
-//                    1);
-//            LogUtils.d("上车接口-----：" + url);
-//            DownCarNetWork downCarNetWork = DownCarNetWork.newInstance(SelectClasChildActivity.this);
-//            downCarNetWork.setNetWorkListener(SelectClasChildActivity.this);
-//            downCarNetWork.setUrl(Keyword.FLAGDOWNCAR, url, UpDownCar.class);
-//        } else {
-//            closeDialog();
-//            ToastUtil.show(list.get(position).getUserName() + "已经上车");
-//            finish();
-//        }
     }
 
     @Override

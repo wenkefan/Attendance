@@ -27,9 +27,9 @@ public class Selectclasschildadapter extends BaseRecyclerAdapter {
         this.listener = listener;
     }
 
-    public Selectclasschildadapter(List<UserBean> list, int flag) {
+    public Selectclasschildadapter(List<UserBean> list) {
         this.list = list;
-        this.flag = flag;
+//        this.flag = flag;
     }
 
     @Override
@@ -43,11 +43,11 @@ public class Selectclasschildadapter extends BaseRecyclerAdapter {
     public void onBindViewHolder(ClickableViewHolder holder, final int position) {
         if (holder instanceof SelectClassChildHolder) {
             SelectClassChildHolder viewholder = (SelectClassChildHolder) holder;
-            if (flag == 1){
-                viewholder.shangche.setText("上车");
-            } else if (flag == 2){
-                viewholder.shangche.setText("下车");
-            }
+//            if (flag == 1){
+//                viewholder.shangche.setText("上车");
+//            } else if (flag == 2){
+//                viewholder.shangche.setText("下车");
+//            }
             viewholder.shangche.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

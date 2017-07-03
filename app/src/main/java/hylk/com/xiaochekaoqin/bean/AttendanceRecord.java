@@ -38,7 +38,12 @@ public class AttendanceRecord {
     public String SADate; // 考勤时间
     public int AttendanceTaget; // 考勤对象  幼儿1  员工2  家长3
 
-//    [{"UserName":"test","SADate":"2016-10-19 15:19:13","SACardNo":"E00401005C284360","IfSendMsg":0,"DiseaseType":0,"RelateId":2757,"CheckType":1,"AttendanceTaget":3,"SAId":0,"TemperatureField":0,"UploadState":0,"UserId":2825,"AttendanceDirection":1}]
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    //    [{"UserName":"test","SADate":"2016-10-19 15:19:13","SACardNo":"E00401005C284360","IfSendMsg":0,"DiseaseType":0,"RelateId":2757,"CheckType":1,"AttendanceTaget":3,"SAId":0,"TemperatureField":0,"UploadState":0,"UserId":2825,"AttendanceDirection":1}]
 //    [{"UserName":"test","SADate":"2016-10-19 15:23:05","SACardNo":"E00401005C284360","RelateId":2757,"CheckType":1,"AttendanceTaget":3,"UserId":2825,"AttendanceDirection":1}]
 
     /** 暂时未用到的 */

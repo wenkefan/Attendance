@@ -3,7 +3,7 @@
     package="hylk.com.xiaochekaoqin"
     android:installLocation="auto"
     android:versionCode="1"
-    android:versionName="Ver: 1.2.20170306.1">
+    android:versionName="Ver: 1.2.20170525.1">
 
     <uses-feature android:name="android.hardware.usb.host" />
 
@@ -84,11 +84,14 @@
 
         <activity
             android:name="hylk.com.xiaochekaoqin.activity.MainActivity"
-            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation">
+            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"/>
 
-        </activity>
+        <activity
+            android:name="hylk.com.xiaochekaoqin.activity.jiqi.MainActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"/>
 
-        <activity android:name=".activity.SelectClasChildActivity"/>
+
+        <activity android:name=".activity.SelectClasChildActivity" />
 
 
         <!-- 网络发生变化时的广播 -->

@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class JiLuBean implements Serializable {
+    private int userid;
     private String name;
     private int kgid;
     private String kgName;
@@ -14,6 +15,14 @@ public class JiLuBean implements Serializable {
     private String className;
     private String time;
     private String leixing;
+
+    public int getUserid() {
+        return userid;
+    }
+
+    public void setUserid(int userid) {
+        this.userid = userid;
+    }
 
     public String getName() {
         return name;
