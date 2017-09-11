@@ -90,13 +90,18 @@ public class CardDao {
 						String updateTime = bean.UpdateTime;
 						int userId = bean.UserId;
 
+						// ----------------------------------------
+						// 增量更新出现问题 改为以下：
 						Cursor cursor = db.rawQuery(
-								"select Id  from  Card where UserId = ? ",
-								new String[]{ userId + "" });
+								"select UserId  from  Card where Id = ? ",
+								new String[]{ id + "" });
+						//---------------------------------
 
 						if (cursor.moveToNext()) {
-							db.execSQL("update Card set AccessControlUserId=?,CardNo=?,CardType=?,KgId=?,Reason=?,RelateId=?,State=?,UpdateTime=? where UserId = ?",
-									new Object[]{accessControlUserId,cardNo,cardType,kgId,reason,relateId,state,updateTime,userId});
+
+							db.execSQL("update Card set AccessControlUserId=?,CardNo=?,CardType=?,KgId=?,Reason=?,RelateId=?,State=?,UpdateTime=?,userId=? where Id = ?",
+									new Object[]{accessControlUserId,cardNo,cardType,kgId,reason,relateId,state,updateTime,userId,id});
+
 						}else {
 							db.execSQL(
 									"insert into Card(Id,AccessControlUserId,CardNo,CardType,KgId,Reason,RelateId,State,UpdateTime,UserId)values(?,?,?,?,?,?,?,?,?,?)",

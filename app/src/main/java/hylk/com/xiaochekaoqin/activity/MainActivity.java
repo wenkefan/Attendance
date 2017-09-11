@@ -134,10 +134,10 @@ public class MainActivity extends NFCBaseActivity {
                     if (Style == 0) {  // 自动
                         if (TimeUtil.getCurrentHour() < mLeaveTime) {
 //                            mTvState.setText("上车");
-                            AttendanceDirection = 1;
+//                            AttendanceDirection = 1;
                         } else {
 //                            mTvState.setText("下车");
-                            AttendanceDirection = 2;
+//                            AttendanceDirection = 2;
                         }
                     }
 
@@ -242,10 +242,10 @@ public class MainActivity extends NFCBaseActivity {
                     saveToLocal(attendanceRecord);
                     //添加记录
                     List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+                    if (list == null) {
+                        list = new ArrayList<>();
+                    }
                     if (AttendanceDirection == 1) {
-                        if (list == null) {
-                            list = new ArrayList<>();
-                        }
                         JiLuBean jiLuBean = new JiLuBean();
                         jiLuBean.setLeixing("上车");
                         jiLuBean.setUserid(child1.userid);
@@ -254,7 +254,10 @@ public class MainActivity extends NFCBaseActivity {
                         jiLuBean.setClassid(child1.classInfoID);
                         jiLuBean.setTime(TimeUtil.getHM());
                         list.add(0, jiLuBean);
+                        LogUtil.d("保存没上传的数据");
                     } else if (AttendanceDirection == 2) {
+
+                        LogUtil.d("shanc没上传的数据");
                         for (int i = 0; i < list.size(); i++) {
                             if (list.get(i).getUserid() == child1.userid) {
                                 list.remove(i);
@@ -285,10 +288,10 @@ public class MainActivity extends NFCBaseActivity {
                                     WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
                                 }
                                 List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+                                if (list == null) {
+                                    list = new ArrayList<>();
+                                }
                                 if (AttendanceDirection == 1) {
-                                    if (list == null) {
-                                        list = new ArrayList<>();
-                                    }
                                     JiLuBean jiLuBean = new JiLuBean();
                                     jiLuBean.setLeixing("上车");
                                     jiLuBean.setUserid(bean.userid);
@@ -331,6 +334,9 @@ public class MainActivity extends NFCBaseActivity {
         final Child bean = classDao.queryByCardNo(cardNo);
         List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
         AttendanceDirection = 1;
+        if (list == null){
+            list = new ArrayList<>();
+        }
         for (int i = 0; i < list.size(); i++){
             if (list.get(i).getUserid() == bean.userid){
                 AttendanceDirection = 2;
@@ -504,36 +510,7 @@ public class MainActivity extends NFCBaseActivity {
         // 默认离园时间为12点
         mLeaveTime = PrefUtils.getInt(this, Constants.LeaveTime, 12);
 
-        // 入园状态
-
-//        if (Style == 0) {  // 自动
-//            if (TimeUtil.getCurrentHour() < mLeaveTime) {
-//                mTvState.setText("上车");
-//                AttendanceDirection = 1;
-//            } else {
-//                mTvState.setText("下车");
-//                AttendanceDirection = 2;
-//            }
-//        } else if (Style == 1) {  // 入园
-//            mTvState.setText("上车");
-//            AttendanceDirection = 1;
-//        } else {
-//            mTvState.setText("下车");
-//            AttendanceDirection = 2;
-//        }
-
-//        int Day = PrefUtils.getInt(this, "Fangxiang", 0);
-//        if (Day != 0) {
-//            if (AttendanceDirection != Day) {
-//                PrefUtils.saveToShared(this, Key_JiLu, null);
-//                PrefUtils.putInt(this, "Fangxiang", AttendanceDirection);
-//            }
-//        } else {
-//            PrefUtils.putInt(this, "Fangxiang", AttendanceDirection);
-//        }
-
     }
-
 
     @Override
     protected void onCardNoGet(final String CardNo) {

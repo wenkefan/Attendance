@@ -162,10 +162,12 @@ public class SplashActivity extends Activity {
     private void setTe() {
         TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         String szImei = tm.getDeviceId();//智能设备唯一编码
-//        String tel = tm.getLine1Number();//手机号
-        String tel = null;//手机号
+        String tel = tm.getLine1Number();//手机号
         String imei = tm.getSimSerialNumber();//获得SIM卡的序号
         String imsi = tm.getSubscriberId();//得到用户ID
+        LogUtil.d("szImei---" + szImei
+                    + "----tel---" +
+                    "-----imei----" + imei + "----imsi----" + imsi);
         boolean device;
         //设备唯一编码都有，无法判断是手机还是机器，只有通过手机号或者SIM卡的序号来判断
         if (szImei != null && tel != null) {
