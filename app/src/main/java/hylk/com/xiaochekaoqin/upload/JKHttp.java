@@ -53,7 +53,7 @@ public class JKHttp {
 
 		String jsonStr = gson.toJson(mAttendanceRecordList);
 
-		LogUtil.d("listToJson---"+jsonStr);
+		LogUtil.d("listToJson---"+jsonStr + "----kgid----" + kgId);
 
 		RequestBody requestBodyPost = null ;
 

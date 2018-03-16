@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,6 +38,8 @@ import hylk.com.xiaochekaoqin.global.Constants;
 import hylk.com.xiaochekaoqin.global.ThreadManager;
 import hylk.com.xiaochekaoqin.global.UrlConstants;
 import hylk.com.xiaochekaoqin.upload.JKHttp;
+import hylk.com.xiaochekaoqin.utils.ClearTime;
+import hylk.com.xiaochekaoqin.utils.ClearUpData;
 import hylk.com.xiaochekaoqin.utils.LogUtil;
 import hylk.com.xiaochekaoqin.utils.OkHttpUtil;
 import hylk.com.xiaochekaoqin.utils.PrefUtils;
@@ -96,7 +99,7 @@ public class MainActivity extends NFCBaseActivity {
         initData();
 
     }
-
+//one---19500000-----two----26700000
     class TimeThread extends Thread {
         @Override
         public void run() {
@@ -105,6 +108,7 @@ public class MainActivity extends NFCBaseActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     String str = sdf.format(new Date());
                     mHandler.sendMessage(mHandler.obtainMessage(VALUE_TIMER, str));
+                    clearData(str);
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
@@ -238,36 +242,7 @@ public class MainActivity extends NFCBaseActivity {
             public void onFail(int tag, final AttendanceRecord attendanceRecord, Child child1) {
                 LogUtil.d("网络出现问题了，上传失败");
 
-                if (tag == TAG_POST_ATTENDANCE && attendanceRecord != null) {
-                    saveToLocal(attendanceRecord);
-                    //添加记录
-                    List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
-                    if (list == null) {
-                        list = new ArrayList<>();
-                    }
-                    if (AttendanceDirection == 1) {
-                        JiLuBean jiLuBean = new JiLuBean();
-                        jiLuBean.setLeixing("上车");
-                        jiLuBean.setUserid(child1.userid);
-                        jiLuBean.setName(child1.name);
-                        jiLuBean.setClassName(child1.className);
-                        jiLuBean.setClassid(child1.classInfoID);
-                        jiLuBean.setTime(TimeUtil.getHM());
-                        list.add(0, jiLuBean);
-                        LogUtil.d("保存没上传的数据");
-                    } else if (AttendanceDirection == 2) {
-
-                        LogUtil.d("shanc没上传的数据");
-                        for (int i = 0; i < list.size(); i++) {
-                            if (list.get(i).getUserid() == child1.userid) {
-                                list.remove(i);
-                                break;
-                            }
-                        }
-                    }
-                    //添加记录
-                    PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
-                }
+                onFailm(tag, attendanceRecord, child1);
 
             }
 
@@ -285,7 +260,7 @@ public class MainActivity extends NFCBaseActivity {
                                 }
                                 // 微信提醒
                                 if (ifWeiXin) {
-                                    WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
+//                                    WeiXinNotify(bean, AttendanceDirection);  // 传对象和进出方向
                                 }
                                 List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
                                 if (list == null) {
@@ -310,7 +285,10 @@ public class MainActivity extends NFCBaseActivity {
                                 }
                                 //添加记录
                                 PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
+                                recording();
                             }
+                        } else {
+//                            onFailm(tag, attendanceRecord, child1);
                         }
                         break;
                     case TAG_POST_WEIXIN:
@@ -321,6 +299,40 @@ public class MainActivity extends NFCBaseActivity {
 
         });
 
+    }
+
+    private void onFailm(int tag, AttendanceRecord attendanceRecord, Child child1) {
+        if (tag == TAG_POST_ATTENDANCE && attendanceRecord != null) {
+            saveToLocal(attendanceRecord);
+            //添加记录
+            List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
+            if (list == null) {
+                list = new ArrayList<>();
+            }
+            if (AttendanceDirection == 1) {
+                JiLuBean jiLuBean = new JiLuBean();
+                jiLuBean.setLeixing("上车");
+                jiLuBean.setUserid(child1.userid);
+                jiLuBean.setName(child1.name);
+                jiLuBean.setClassName(child1.className);
+                jiLuBean.setClassid(child1.classInfoID);
+                jiLuBean.setTime(TimeUtil.getHM());
+                list.add(0, jiLuBean);
+                LogUtil.d("保存没上传的数据");
+            } else if (AttendanceDirection == 2) {
+
+                LogUtil.d("shanc没上传的数据");
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getUserid() == child1.userid) {
+                        list.remove(i);
+                        break;
+                    }
+                }
+            }
+            //添加记录
+            PrefUtils.saveToShared(MainActivity.this, Key_JiLu, list);
+            recording();
+        }
     }
 
 
@@ -334,11 +346,11 @@ public class MainActivity extends NFCBaseActivity {
         final Child bean = classDao.queryByCardNo(cardNo);
         List<JiLuBean> list = (List<JiLuBean>) PrefUtils.queryForSharedToObject(MainActivity.this, Key_JiLu);
         AttendanceDirection = 1;
-        if (list == null){
+        if (list == null) {
             list = new ArrayList<>();
         }
-        for (int i = 0; i < list.size(); i++){
-            if (list.get(i).getUserid() == bean.userid){
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUserid() == bean.userid) {
                 AttendanceDirection = 2;
                 break;
             }
@@ -539,7 +551,8 @@ public class MainActivity extends NFCBaseActivity {
         startActivityForResult(new Intent(this, LookRecordActivity.class), 2);
 //        jilu.setTextColor(getResources().getColor(R.color.colorAccent));
     }
-    public void Shangche(View view){
+
+    public void Shangche(View view) {
 
 //        wucashang.setTextColor(getResources().getColor(R.color.colorAccent));
         //单园时选择班级
@@ -681,4 +694,25 @@ public class MainActivity extends NFCBaseActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    private void recording(){
+        if (!PrefUtils.getBoolean(this,Constants.CLEARUPDATAFLG,false)){
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            String str = sdf.format(new Date());
+            PrefUtils.putString(this,Constants.CLEARUPDATA,str);
+            PrefUtils.putBoolean(this,Constants.CLEARUPDATAFLG,true);
+        }
+    }
+
+    private void clearData(String time2){
+        if (PrefUtils.getBoolean(this,Constants.CLEARUPDATAFLG,false)) {
+            String time1 = PrefUtils.getString(this, Constants.CLEARUPDATA, "12:00:00");
+            boolean flag = ClearTime.getInstance().getTime(time1, time2);
+            if (flag) {
+                ClearUpData.getInstance().clearData().clearTime();
+                PrefUtils.putBoolean(this, Constants.CLEARUPDATAFLG, false);
+            }
+        }
+    }
+
 }

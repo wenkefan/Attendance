@@ -57,8 +57,10 @@ public class UrlConstants {
 
 
     // 公共接口
-//    public static final String URL = "http://192.168.1.121:8080/WebServices/AttendanceService.ashx?Option=";
-    public static final String URL = "http://manage.youery.com/WebServices/AttendanceService.ashx?Option=";
+//    public final static String URLS = "http://192.168.1.66:81";
+    public final static String URLS = "http://manage.youery.com";
+
+    public static final String URL = URLS + "/WebServices/AttendanceService.ashx?Option=";
 
     // 幼儿园信息
     public static final String GetKindergarten = URL

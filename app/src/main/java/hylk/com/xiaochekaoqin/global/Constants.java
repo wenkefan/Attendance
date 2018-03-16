@@ -66,4 +66,6 @@ public class Constants {
 	public static final String CarPan = "CarPan";
 	public static final String Device = "Device";
 
+    public static final String CLEARUPDATA = "CLEARUPDATA";
+    public static final String CLEARUPDATAFLG = "CLEARUPDATAFLG";
 }
